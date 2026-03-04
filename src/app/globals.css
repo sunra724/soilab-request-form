@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* ===== 소이랩 브랜드 색상 ===== */
+:root {
+  --green-main:  #2D6A4F;
+  --green-light: #74C69D;
+  --green-bg:    #F0FAF5;
+  --gray-label:  #4A4A4A;
+  --gray-border: #D1D5DB;
+  --error:       #DC2626;
+  --background:  #F3F6F4;
+}
+
+/* ===== Tailwind v4 커스텀 테마 ===== */
+@theme inline {
+  --color-gm:    var(--green-main);
+  --color-gl:    var(--green-light);
+  --color-gbg:   var(--green-bg);
+  --color-err:   var(--error);
+
+  /* soilab 브랜드 색상 (tailwind.config의 colors.soilab.* 역할) */
+  --color-soilab-main:  #2D6A4F;
+  --color-soilab-light: #74C69D;
+  --color-soilab-bg:    #F0FAF5;
+}
+
+body {
+  background-color: var(--background);
+  color: #1a1a1a;
+  font-family: var(--font-noto-sans-kr), 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 폼 인풋 공통 포커스 스타일 ===== */
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--green-main);
+  box-shadow: 0 0 0 3px rgba(116, 198, 157, 0.25);
+}
+
+/* ===== 숫자 애니메이션 ===== */
+.amount-flash {
+  transition: color 0.4s ease;
+}

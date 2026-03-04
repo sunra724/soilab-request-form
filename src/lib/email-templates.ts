@@ -2,36 +2,6 @@ import type { EstimateResult } from "@/types/request-form";
 import type { RequestFormSchema } from "@/lib/validations";
 import { formatKRW } from "@/lib/estimate";
 
-// ===== 레이블 매핑 =====
-const LECTURE_TYPE_LABELS: Record<string, string> = {
-  lecture: "강의 (일방향)",
-  workshop: "워크숍 (참여형)",
-  seminar: "세미나",
-  consulting: "컨설팅",
-  training: "교육훈련",
-  other: "기타",
-};
-
-const AUDIENCE_LABELS: Record<string, string> = {
-  elementary: "초등학생",
-  middle: "중학생",
-  high: "고등학생",
-  university: "대학생",
-  adult: "성인 일반",
-  senior: "시니어",
-  employee: "직장인",
-  teacher: "교사/강사",
-  mixed: "혼합",
-  other: "기타",
-};
-
-const VENUE_TYPE_LABELS: Record<string, string> = {
-  provided: "의뢰처 제공 장소",
-  online: "온라인",
-  soilab: "소이랩 공간",
-  tbd: "미정",
-};
-
 // 세션 일정 텍스트 생성
 function formatSessions(formData: RequestFormSchema): string {
   return formData.sessions
@@ -40,6 +10,14 @@ function formatSessions(formData: RequestFormSchema): string {
         `  ${formData.isMultiSession ? `${i + 1}회차: ` : ""}${s.date} ${s.startTime}~${s.endTime} (${Math.floor(s.durationMinutes / 60)}시간 ${s.durationMinutes % 60}분)`
     )
     .join("\n");
+}
+
+// 장소 텍스트 생성
+function formatVenue(formData: RequestFormSchema): string {
+  if (formData.locationType === "online") {
+    return `비대면 (${formData.onlinePlatform || "플랫폼 미입력"})`;
+  }
+  return `대면 (${formData.address || "주소 미입력"})`;
 }
 
 // ===== 의뢰자용 이메일 템플릿 =====
@@ -58,30 +36,39 @@ export function buildRequesterEmailText(
   return `
 [소이랩 강의 의뢰서 접수 확인]
 
-안녕하세요, ${formData.requester.name}님.
 소이랩에 강의를 의뢰해 주셔서 감사합니다.
 아래 내용으로 의뢰서가 접수되었습니다.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-■ 의뢰자 정보
+■ 의뢰자 연락처
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-담당자: ${formData.requester.name}
-기관명: ${formData.requester.organization}
-연락처: ${formData.requester.phone}
-이메일: ${formData.requester.email}
+사무실 전화: ${formData.officePhone || "-"}
+휴대폰: ${formData.mobilePhone}
+이메일: ${formData.email}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ 강의 정보
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-강의 유형: ${LECTURE_TYPE_LABELS[formData.lectureType] ?? formData.lectureType}
-세부 주제: ${formData.topicDetail}
-대상: ${AUDIENCE_LABELS[formData.audienceType] ?? formData.audienceType} ${formData.audienceCount}명
-장소: ${VENUE_TYPE_LABELS[formData.venue.type] ?? formData.venue.type}
+교육/워크숍명: ${formData.workshopName}
+교육 목표: ${formData.goal}
+전체 프로그램명: ${formData.programName || "-"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 교육 대상 및 규모
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+참가 인원: ${formData.participantCount}명
+메인 강사: ${formData.mainInstructorCount}명
+보조강사: ${formData.assistantInstructorCount}명
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ 일정
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${formatSessions(formData)}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 장소
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${formatVenue(formData)}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ 예상 견적 (참고용)
@@ -93,11 +80,10 @@ ${estimate.taxOrDeductionLabel}: ${formatKRW(estimate.taxOrDeduction)}
 최종 금액: ${formatKRW(estimate.total)}
 
 * 최종 견적은 담당자 확인 후 별도 안내드립니다.
-${estimate.breakdown.split("\n").map((n) => `* ${n}`).join("\n")}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-담당자가 3일 이내에 연락드리겠습니다.
-문의: soilab@example.com
+담당자가 2영업일 내에 연락드리겠습니다.
+문의: soilabcoop@gmail.com
 
 협동조합 소이랩 드림
   `.trim();
@@ -113,16 +99,17 @@ export function buildAdminEmailText(
 
 새로운 강의 의뢰가 접수되었습니다.
 
-의뢰자: ${formData.requester.name} (${formData.requester.organization})
-연락처: ${formData.requester.phone} / ${formData.requester.email}
-강의 유형: ${LECTURE_TYPE_LABELS[formData.lectureType] ?? formData.lectureType}
-주제: ${formData.topicDetail}
-대상: ${AUDIENCE_LABELS[formData.audienceType] ?? formData.audienceType} ${formData.audienceCount}명
+연락처: ${formData.mobilePhone} / ${formData.email}${formData.officePhone ? ` / 사무실 ${formData.officePhone}` : ""}
+교육/워크숍명: ${formData.workshopName}
+교육 목표: ${formData.goal}
+전체 프로그램명: ${formData.programName || "-"}
+참가 인원: ${formData.participantCount}명 (메인 ${formData.mainInstructorCount}명 / 보조 ${formData.assistantInstructorCount}명)
+장소: ${formatVenue(formData)}
 일정:
 ${formatSessions(formData)}
 예상 견적: ${formatKRW(estimate.total)}
 
 추가 요청사항:
-${formData.additionalRequests ?? "없음"}
+${formData.additionalRequests || "없음"}
   `.trim();
 }

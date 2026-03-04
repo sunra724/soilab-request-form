@@ -18,7 +18,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<SendEmail
     const adminEmailText = buildAdminEmailText(formData, estimate);
 
     console.log("=== 의뢰자 이메일 (발송 예정) ===");
-    console.log("수신:", formData.requester.email);
+    console.log("수신:", formData.email);
     console.log(requesterEmailText);
 
     console.log("=== 담당자 알림 이메일 (발송 예정) ===");
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<SendEmail
     console.log(adminEmailText);
 
     // TODO: 이메일 발송 로직 구현
-    // await sendEmail({ to: formData.requester.email, ... });
+    // await sendEmail({ to: formData.email, ... });
     // await sendEmail({ to: ADMIN_EMAIL, ... });
 
     return NextResponse.json({ success: true, message: "의뢰서가 성공적으로 접수되었습니다." });

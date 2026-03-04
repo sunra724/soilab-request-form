@@ -90,7 +90,7 @@ function CompleteContent() {
             새 의뢰서 작성
           </Link>
           <a
-            href="https://soilabcoop.com"
+            href="https://soilabcoop.kr"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium rounded-lg bg-gm text-white hover:opacity-90 transition-opacity"

@@ -65,6 +65,7 @@ function buildParams(
   return {
     접수번호: receiptNumber,
     이메일: recipientEmail,
+    담당자명: data.contactName,
     사무실전화: data.officePhone || "-",
     휴대폰: data.mobilePhone,
     전체프로그램명: data.programName || "-",

@@ -86,6 +86,7 @@ function CountInput({
 
 // ===== 기본값 =====
 const DEFAULT_VALUES: Partial<RequestFormSchema> = {
+  contactName: "",
   officePhone: "",
   mobilePhone: "",
   email: "",
@@ -166,6 +167,20 @@ export default function RequestForm() {
         {/* ===== 섹션 1: 의뢰자 정보 ===== */}
         <FormSection title="의뢰자 정보" step={1}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+            {/* 담당자명 (필수) */}
+            <div className="sm:col-span-2">
+              <Label htmlFor="contactName" required>담당자명</Label>
+              <input
+                id="contactName"
+                type="text"
+                className={inputCls}
+                style={{ borderColor: errors.contactName ? "var(--error)" : "var(--gray-border)" }}
+                placeholder="홍길동"
+                {...register("contactName")}
+              />
+              <Err msg={errors.contactName?.message} />
+            </div>
 
             {/* 사무실 전화 (선택) */}
             <div>

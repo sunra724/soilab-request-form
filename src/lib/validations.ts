@@ -20,6 +20,7 @@ const budgetSchema = z.object({
 // ===== 메인 폼 스키마 =====
 export const requestFormSchema = z.object({
   // ① 의뢰자 정보
+  contactName: z.string().min(1, "담당자명을 입력해주세요"),
   officePhone: z.string().optional(),
   mobilePhone: z
     .string()

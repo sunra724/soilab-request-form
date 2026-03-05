@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { requestFormSchema, type RequestFormSchema } from "@/lib/validations";
 import { calculateEstimate } from "@/lib/estimate";
+import { sendFormEmails } from "@/lib/emailjs";
 import type { EstimateResult } from "@/types/form";
 
 import FormSection from "@/components/FormSection";
@@ -141,18 +142,14 @@ export default function RequestForm() {
   }, [watch]);
 
   const onSubmit = async (data: RequestFormSchema) => {
+    if (!estimate) {
+      alert("견적 정보를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formData: data, estimate }),
-      });
-
-      if (!response.ok) throw new Error("이메일 발송 실패");
-
-      // 접수번호 생성 후 완료 페이지로 이동
       const receiptNumber = `SL-${Date.now().toString(36).toUpperCase()}`;
+      await sendFormEmails(data, estimate, receiptNumber);
       router.push(`/complete?receipt=${receiptNumber}`);
     } catch (error) {
       console.error("제출 오류:", error);

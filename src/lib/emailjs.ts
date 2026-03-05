@@ -62,7 +62,13 @@ function buildParams(
   receiptNumber: string,
   recipientEmail: string
 ) {
+  const 장소 =
+    data.locationType === "online"
+      ? `온라인 (${data.onlinePlatform || "플랫폼 미정"})`
+      : `오프라인 (${data.address || "장소 미정"})`;
+
   return {
+    name: data.contactName,        // EmailJS 헤더용
     접수번호: receiptNumber,
     이메일: recipientEmail,
     담당자명: data.contactName,
@@ -71,9 +77,7 @@ function buildParams(
     전체프로그램명: data.programName || "-",
     교육명: data.workshopName,
     교육목표: data.goal,
-    장소유형: data.locationType === "online" ? "온라인" : "오프라인",
-    online_platform:
-      data.locationType === "online" ? data.onlinePlatform || "-" : "-",
+    장소,
     교육일시: formatSessionsText(data),
     참가인원: String(data.participantCount),
     메인강사수: String(data.mainInstructorCount),

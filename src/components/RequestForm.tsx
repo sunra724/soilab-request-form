@@ -95,6 +95,7 @@ const DEFAULT_VALUES: Partial<RequestFormSchema> = {
   programName: "",
   participantCount: 20,
   mainInstructorCount: 1,
+  executionType: "individual",
   assistantInstructorCount: 0,
   isMultiSession: false,
   sessions: [{ date: "", startTime: "", endTime: "", durationMinutes: 120 }],

@@ -3,6 +3,11 @@
 import { useFormContext } from "react-hook-form";
 import type { RequestFormSchema } from "@/lib/validations";
 
+const EXECUTION_OPTIONS = [
+  { value: "individual", label: "개인수당 지급", desc: "원천징수 3.3% 차감" },
+  { value: "contract", label: "세금계산서", desc: "부가세 10% 별도" },
+] as const;
+
 const PAYMENT_OPTIONS = [
   { value: "before", label: "강의 전", desc: "사전 지급" },
   { value: "after", label: "강의 후", desc: "완료 후 지급" },
@@ -21,9 +26,52 @@ export default function BudgetField() {
 
   const hasEstimate = watch("budget.hasEstimate");
   const paymentTiming = watch("budget.paymentTiming");
+  const executionType = watch("executionType");
 
   return (
     <div className="space-y-4">
+      {/* 집행 방식 */}
+      <div
+        className="rounded-xl border-2 p-4"
+        style={{ borderColor: "var(--green-main)", backgroundColor: "var(--green-bg)" }}
+      >
+        <p className="mb-3 text-sm font-semibold" style={{ color: "var(--green-main)" }}>
+          집행 방식 <span style={{ color: "var(--error)" }}>*</span>
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {EXECUTION_OPTIONS.map(({ value, label, desc }) => {
+            const isSelected = executionType === value;
+            return (
+              <label key={value} className="cursor-pointer">
+                <input
+                  type="radio"
+                  value={value}
+                  className="sr-only"
+                  {...register("executionType")}
+                />
+                <div
+                  className="rounded-lg border-2 p-3 text-center transition-all duration-150"
+                  style={{
+                    borderColor: isSelected ? "var(--green-main)" : "var(--gray-border)",
+                    backgroundColor: isSelected ? "white" : "transparent",
+                  }}
+                >
+                  <div
+                    className="text-sm font-semibold"
+                    style={{ color: isSelected ? "var(--green-main)" : "var(--gray-label)" }}
+                  >
+                    {label}
+                  </div>
+                  <div className="mt-0.5 text-xs" style={{ color: "var(--gray-label)" }}>
+                    {desc}
+                  </div>
+                </div>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
       {/* 예산 확정 여부 */}
       <label className="inline-flex cursor-pointer items-center gap-2.5">
         <input

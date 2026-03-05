@@ -82,6 +82,7 @@ function buildParams(
     참가인원: String(data.participantCount),
     메인강사수: String(data.mainInstructorCount),
     보조강사수: String(data.assistantInstructorCount),
+    집행방식: data.executionType === "individual" ? "개인수당 지급" : "세금계산서",
     예산: formatBudgetText(data),
     추가요청사항: data.additionalRequests || "-",
     견적내용: formatEstimateText(estimate),

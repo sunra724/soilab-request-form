@@ -56,6 +56,9 @@ export const requestFormSchema = z.object({
   onlinePlatform: z.string().optional(),
 
   // ⑥ 예산
+  executionType: z.enum(["individual", "contract"] as const, {
+    error: "집행 방식을 선택해주세요",
+  }),
   budget: budgetSchema,
 
   // ⑦ 추가 요청사항
